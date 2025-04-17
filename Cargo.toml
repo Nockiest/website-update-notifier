@@ -8,3 +8,7 @@ reqwest = { version = "0.12.15", features= ['json']   }
 scraper = "0.23.1"
 tokio = { version = "1", features = ["full"] }
 regex = "1.7"
+lettre = { version = '0.11.15', features = ['builder', 'smtp-transport']}
+# winrt_notification = '1.0'
+#notify-rust = "4"
+#win_toast_notify = "0.1.6"
