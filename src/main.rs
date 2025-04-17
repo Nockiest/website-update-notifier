@@ -2,7 +2,8 @@ use reqwest;
 use scraper::{
     Html, Selector  , ElementRef 
 };
-// use scraper::element_ref
+use std::fs::File;
+use std::io::Write; // for File
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -16,20 +17,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let selector: Selector = Selector::parse("div[class*='datum']").unwrap();
     let last_element: Option<ElementRef<'_>> = document.select(&selector).last();    
-    if  last_element.is_none() {
-        println!("No elements found");
-        return Ok(());
-    }
+    // if  last_element.is_none() {
+    //     println!("No elements found");
+    //     return Ok(());
+    // }
     println!("Last element: {:?}", last_element);
     if let Some(element) = last_element {
-        let date = element.inner_html();
+        let date: String = element.inner_html();
         println!("Date: {}", date);
+        let mut file = File::create("last_date.txt").unwrap();
+        file.write_all(date.as_bytes() ).unwrap();
     }
-    // let date = last_element.html() //last_element.html();  //.value().collect::<Vec<_>>().join(" ");
-    // println!("Date: {}", date);
-    // {
-    //     let date = element.text().collect::<Vec<_>>().join(" ");
-    //     println!("Date: {}", date);
-    // }
     Ok(())
 }
