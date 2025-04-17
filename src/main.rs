@@ -24,23 +24,45 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("new_date: {}", raw_date);
         
         let re = Regex::new(r"(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})").unwrap();
-        
-        if let Some(captures) = re.captures(&raw_date) {
-            let day = &captures[1];
-            let month = &captures[2];
-            let year = &captures[3];
-            println!("day: {}, month: {}, year: {}", day, month, year);
-            let formatted_date = format!("{}-{}-{}", year, month, day);
-            let mut file = File::create("previous_date.txt").unwrap();
-            file.write_all(formatted_date.as_bytes() ).unwrap();
-        } else {
-            println!("No match found");
+        let new_date = format_date(&raw_date);
+        if new_date.is_empty() {
+            println!("Date format is incorrect or date doesnt exist");
+            return Ok(());
         }
+        if new_date == previous_date {
+            println!("Date is the same as previous date {} {}", new_date, previous_date);
+        } else {
+            println!("Date is different from previous date {} {}", new_date, previous_date);
+        }
+        let mut file = File::create("previous_date.txt").unwrap();
+        file.write_all(new_date.as_bytes() ).unwrap();
+        // if let Some(captures) = re.captures(&raw_date) {
+        //     let day = &captures[1];
+        //     let month = &captures[2];
+        //     let year = &captures[3];
+        //     println!("day: {}, month: {}, year: {}", day, month, year);
+        //     let formatted_date = format!("{}-{}-{}", year, month, day);
+            
+        // } else {
+        //     println!("No match found");
+        // }
         
         
        
     }
     Ok(())
+}
+
+fn format_date(date: &str) -> String {
+    let re = Regex::new(r"(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})").unwrap();
+    if let Some(captures) = re.captures(date) {
+        let day = &captures[1];
+        let month = &captures[2];
+        let year = &captures[3];
+        format!("{}-{}-{}", year, month, day)
+    } else {
+        String::new()
+    }
 }
 
 fn read_previous_date() -> String {
