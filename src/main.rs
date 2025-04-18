@@ -77,12 +77,12 @@ fn read_previous_date() -> String {
 fn send_email(new_date: &str) -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok(); // Reads the .env file
     
-    let EMAIL: String  = env::var("EMAIL").expect("EMAIL environment variable not set");;
-    let password = env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD environment variable not set");;
-   
+    let EMAIL: String  = env::var("EMAIL").expect("EMAIL environment variable not set");
+    let password = env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD environment variable not set");
+   let to_email: String = env::var("TO_EMAIL").expect("TO_EMAIL environment variable not set");
     let email_message = Message::builder()
         .from(EMAIL.parse()? ) // Replace with your EMAIL
-        .to(EMAIL.parse()? ) // Replace with the recipient's email
+        .to(to_email.parse()? ) // Replace with the recipient's email
         .subject("New Meal Found!")
         .body(format!(
             "A new meal is available for the date: {}",
