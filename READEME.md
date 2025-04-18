@@ -12,6 +12,5 @@ How to write to a text file in Rust
 1. Fork the project and download it to your pc
 2. In gmail create a new app for your email and write your email and 
 generated password into .env
-3. specify email that should be written to
-2. run cargo build in the root of the project
-3. in windows task scheduler create a new task that runs the .exe file created in /target/debug every day
+3. run cargo build in the root of the project
+4. in windows task scheduler create a new task that runs the .exe file created in /target/debug every day
