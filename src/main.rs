@@ -5,25 +5,22 @@ use std::fs::File;
 use std::io::{Read, Write}; // for File
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
+use std::env; // Import the env module
+use dotenv::dotenv;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Hello, world!");
     let url = "https://www.jidelna.cz/jidelni-listek/?jidelna=53";
     let response = reqwest::get(url).await?.text().await?;
     println!("Response: {}", response);
-    let mut input = String::new();	
     let document: Html = Html::parse_document(&response);
-    println!("3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333",  );
-    let mut input = String::new();	
     let previous_date = read_previous_date();
     println!("Previous date: {}", previous_date);
-    
-    let mut input = String::new();	let selector: Selector = Selector::parse("div[class*='datum']").unwrap();
+    let selector: Selector = Selector::parse("div[class*='datum']").unwrap();
     let last_element: Option<ElementRef<'_>> = document.select(&selector).last();
     println!("Last element: {:?}", last_element);
     if let Some(element) = last_element {
-
-let mut input = String::new();	        let raw_date: String = element.inner_html();
+        let raw_date: String = element.inner_html();
         let new_date: String = format_date(&raw_date);
         if new_date.is_empty() {
             println!("Date format is incorrect or date doesnt exist");
@@ -41,13 +38,11 @@ let mut input = String::new();	        let raw_date: String = element.inner_html
             );
             send_email(&new_date)?;
         }
-        let mut input = String::new();	
         if let Ok(file) = File::open("previous_date.txt") {
             println!("File found! {}", file.metadata().unwrap().len());
         } else {
             println!("File not found!");
         }
-        let mut input = String::new();	
         let mut file = File::create("previous_date.txt").unwrap();
         file.write_all(new_date.as_bytes()).unwrap();
     }
@@ -80,19 +75,21 @@ fn read_previous_date() -> String {
 }
 
 fn send_email(new_date: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let email: &str = "yahooondra06@gmail.com";
-    let password: &str = "lptl dabm hpke cjjn";
-    // let to_email: &str = "ondralukes06@seznam.cz";
+    dotenv().ok(); // Reads the .env file
+    
+    let EMAIL: String  = env::var("EMAIL").expect("EMAIL environment variable not set");;
+    let password = env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD environment variable not set");;
+   
     let email_message = Message::builder()
-        .from(email.parse()?) // Replace with your email
-        .to(email.parse()?) // Replace with the recipient's email
+        .from(EMAIL.parse()? ) // Replace with your EMAIL
+        .to(EMAIL.parse()? ) // Replace with the recipient's email
         .subject("New Meal Found!")
         .body(format!(
             "A new meal is available for the date: {}",
             new_date
         ))?;
 
-    let creds = Credentials::new(email.to_string(), password.to_string());
+    let creds = Credentials::new(EMAIL.to_string(), password.to_string());
     let mailer = SmtpTransport::relay("smtp.gmail.com")? // Gmail's SMTP server
         .credentials(creds)
         .build();
